@@ -1,44 +1,24 @@
 module ProductForm
-
 open System
 open System.Drawing
 open System.Windows.Forms
-open Product // Member 1's module (Product.fs)
-
-// ---------------------------------------------------------------
-// Shared state / hooks for other members
-// ---------------------------------------------------------------
-
-/// The product currently selected in the catalog (None if nothing selected).
-/// Member 3 (Add to Cart) can read this.
+open Product 
 let mutable selectedProduct : Product option = None
-
-/// Callback fired whenever the user selects a product.
-/// Member 3 / Member 7 can replace it, e.g.:
-///   ProductForm.onProductSelected <- fun p -> printfn "%s" p.Name
 let mutable onProductSelected : Product -> unit = ignore
-
-// ---------------------------------------------------------------
-// Theme
-// ---------------------------------------------------------------
 
 let private rgb r g b = Color.FromArgb(r, g, b)
 
-let private headerColor   = rgb 62 39 35      // dark chocolate brown
-let private accentColor   = rgb 121 85 61     // medium coffee brown
-let private accentHover   = rgb 93 64 45      // darker brown (hover)
-let private pageColor     = rgb 245 237 224   // soft beige
-let private cardColor     = rgb 255 251 245   // cream
-let private textDark      = rgb 62 39 35      // dark brown text
-let private textMuted     = rgb 120 98 84     // taupe
-let private priceColor    = rgb 166 94 27     // caramel
-let private rowAlt        = rgb 250 244 234   // light beige
-let private rowSelected   = rgb 232 213 190   // sand
-let private gridLine      = rgb 230 219 203   // light tan
-
-// ---------------------------------------------------------------
-// Form
-// ---------------------------------------------------------------
+let private headerColor   = rgb 62 39 35     
+let private accentColor   = rgb 121 85 61     
+let private accentHover   = rgb 93 64 45      
+let private pageColor     = rgb 245 237 224  
+let private cardColor     = rgb 255 251 245  
+let private textDark      = rgb 62 39 35   
+let private textMuted     = rgb 120 98 84    
+let private priceColor    = rgb 166 94 27  
+let private rowAlt        = rgb 250 244 234  
+let private rowSelected   = rgb 232 213 190  
+let private gridLine      = rgb 230 219 203   
 
 let createProductForm () : Form =
     let form =
@@ -51,7 +31,6 @@ let createProductForm () : Form =
             Font = new Font("Segoe UI", 10.0f)
         )
 
-    // ---------- Header banner ----------
     let header = new Panel(Dock = DockStyle.Top, Height = 85, BackColor = headerColor)
 
     let title =
@@ -72,7 +51,6 @@ let createProductForm () : Form =
         )
     header.Controls.AddRange([| title :> Control; subtitle :> Control |])
 
-    // ---------- Product table ----------
     let grid =
         new DataGridView(
             Dock = DockStyle.Fill,
@@ -95,14 +73,12 @@ let createProductForm () : Form =
             Cursor = Cursors.Hand
         )
 
-    // header style
     grid.ColumnHeadersDefaultCellStyle.BackColor <- accentColor
     grid.ColumnHeadersDefaultCellStyle.ForeColor <- Color.White
     grid.ColumnHeadersDefaultCellStyle.Font <- new Font("Segoe UI Semibold", 10.5f)
     grid.ColumnHeadersDefaultCellStyle.SelectionBackColor <- accentColor
     grid.ColumnHeadersDefaultCellStyle.Padding <- Padding(12, 0, 0, 0)
 
-    // row style
     grid.RowTemplate.Height <- 42
     grid.DefaultCellStyle.BackColor <- cardColor
     grid.DefaultCellStyle.ForeColor <- textDark
@@ -113,7 +89,6 @@ let createProductForm () : Form =
     grid.AlternatingRowsDefaultCellStyle.SelectionBackColor <- rowSelected
     grid.AlternatingRowsDefaultCellStyle.SelectionForeColor <- textDark
 
-    // columns
     grid.Columns.Add("Name", "Product") |> ignore
     grid.Columns.Add("Price", "Price") |> ignore
     grid.Columns.Add("Description", "Description") |> ignore
@@ -126,12 +101,10 @@ let createProductForm () : Form =
     for c in grid.Columns do
         c.SortMode <- DataGridViewColumnSortMode.NotSortable
 
-    // fill from Member 1's catalog
     for p in getAllProducts () do
         let idx = grid.Rows.Add(p.Name, p.Price.ToString("N2"), p.Description)
         grid.Rows.[idx].Tag <- box p
 
-    // ---------- Details card ----------
     let spacer = new Panel(Dock = DockStyle.Bottom, Height = 16, BackColor = pageColor)
 
     let card = new Panel(Dock = DockStyle.Bottom, Height = 130, BackColor = cardColor)
@@ -165,13 +138,11 @@ let createProductForm () : Form =
         [| nameLabel :> Control; descLabel :> Control; priceLabel :> Control; accentStrip :> Control |]
     )
 
-    // ---------- Body (grid + details) ----------
     let body = new Panel(Dock = DockStyle.Fill, Padding = Padding(20, 20, 20, 10), BackColor = pageColor)
     body.Controls.Add(grid)     // Fill control first
     body.Controls.Add(spacer)
     body.Controls.Add(card)
 
-    // ---------- Footer ----------
     let footer = new Panel(Dock = DockStyle.Bottom, Height = 64, BackColor = cardColor, Padding = Padding(20, 12, 20, 12))
 
     let countLabel =
@@ -202,7 +173,6 @@ let createProductForm () : Form =
     footer.Controls.Add(countLabel)
     footer.Controls.Add(closeButton)
 
-    // ---------- Product selection ----------
     grid.SelectionChanged.Add(fun _ ->
         if grid.SelectedRows.Count > 0 then
             let p = grid.SelectedRows.[0].Tag :?> Product
@@ -217,14 +187,12 @@ let createProductForm () : Form =
             descLabel.Text <- "Click any row in the table to see its details here."
             priceLabel.Text <- "")
 
-    // Form.Controls: Fill first, then Bottom, then Top (docking order)
     form.Controls.Add(body)
     form.Controls.Add(footer)
     form.Controls.Add(header)
 
     form
 
-/// Opens the catalog form (non-blocking). Member 7 can call this from the main menu.
 let showProductForm () =
     let form = createProductForm ()
     form.Show()
