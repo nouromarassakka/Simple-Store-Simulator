@@ -15,5 +15,5 @@ An F# project that simulates a simple store and shopping cart.
 ## Technologies
 - F#
 - .NET
-- Windows Forms Simple-Store-Simulator
+- Windows Forms
 
