@@ -20,13 +20,10 @@ An F# project that simulates a simple store and shopping cart.
 - .NET
 - Windows Forms
 
-### CartOperations.fs
 
-This file handles the shopping cart operations, including:
-
+  
 Mirna member3 cart operations
 ### CartOperations.fs
-
 - **Cart Management:** Stores cart items as a list of product names and provides functions to retrieve, update, and clear the cart.
 - **Cart Changed Event:** Defines an event that is triggered whenever the cart is updated or cleared.
 - **Product Validation:** Validates product names against the existing product catalog and handles empty or invalid product names.
