@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Include="src/Product.fs" />
+    <Compile Include="src/CartOperations.fs" /> 
     <Compile Include="src/ProductForm.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
